@@ -566,6 +566,16 @@
             <div style="margin-top: 1rem;">
                 <button id="refresh-data-btn">🔄 Atualizar Fantasias</button>
             </div>
+            
+            <!-- Área para colar dados do admin -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--secondary-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                <h4 style="color: var(--accent-orange); margin-bottom: 0.5rem;">📤 Sincronização Manual</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Se as fantasias não aparecerem automaticamente, peça para o admin exportar os dados e cole aqui:
+                </p>
+                <textarea id="shared-data" placeholder="Cole aqui os dados que o admin compartilhou..." style="width: 100%; height: 80px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-bg); color: var(--text-primary); font-family: monospace; font-size: 0.8rem; margin-bottom: 0.5rem;"></textarea>
+                <button id="import-data-btn" style="background: var(--gradient); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">📥 Importar Dados</button>
+            </div>
         </div>
 
         <!-- Grid de Fantasias -->
@@ -670,7 +680,7 @@
         let costumes = [];
         let currentVoter = null;
         let voterVotes = {};
-        const SHARED_DATA_URL = 'https://raw.githubusercontent.com/julliermynunes-oss/halloween/main/shared-data.json';
+        const ADMIN_SITE_URL = 'https://julliermynunes-oss.github.io/halloween/';
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -712,29 +722,72 @@
             });
 
             // Atualizar fantasias
-            document.getElementById('refresh-data-btn').addEventListener('click', () => {
-                loadData();
+            document.getElementById('refresh-data-btn').addEventListener('click', async () => {
+                await loadCostumesFromAdmin();
                 renderCostumes();
-                showMessage('Fantasias atualizadas!', 'success');
             });
+            
+            // Importar dados manuais
+            document.getElementById('import-data-btn').addEventListener('click', importData);
         }
 
-        function loadData() {
+        async function loadData() {
+            // Carregar dados locais primeiro
             const storedData = localStorage.getItem('halloweenVotingData');
             if (storedData) {
                 try {
                     const data = JSON.parse(storedData);
-                    costumes = data.costumes || [];
                     voterVotes = data.voterVotes || {};
                     currentVoter = data.currentVoter || null;
                 } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                    costumes = [];
+                    console.error('Erro ao carregar dados locais:', error);
                     voterVotes = {};
                     currentVoter = null;
                 }
             }
+            
+            // Buscar fantasias do site do admin
+            await loadCostumesFromAdmin();
             updateVoterStatus();
+        }
+
+        async function loadCostumesFromAdmin() {
+            try {
+                // Usar uma técnica para acessar o localStorage do site do admin
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = ADMIN_SITE_URL;
+                document.body.appendChild(iframe);
+                
+                iframe.onload = () => {
+                    try {
+                        // Tentar acessar o localStorage do iframe
+                        const adminData = iframe.contentWindow.localStorage.getItem('halloweenVotingData');
+                        if (adminData) {
+                            const data = JSON.parse(adminData);
+                            if (data.costumes && Array.isArray(data.costumes)) {
+                                costumes = data.costumes;
+                                saveData();
+                                renderCostumes();
+                                showMessage('Fantasias atualizadas do admin!', 'success');
+                            }
+                        }
+                    } catch (error) {
+                        console.log('Não foi possível acessar dados do admin:', error);
+                        // Fallback: usar dados locais se existirem
+                        if (costumes.length === 0) {
+                            showMessage('Nenhuma fantasia disponível. Peça para o admin adicionar fantasias primeiro.', 'info');
+                        }
+                    } finally {
+                        document.body.removeChild(iframe);
+                    }
+                };
+            } catch (error) {
+                console.log('Erro ao carregar fantasias do admin:', error);
+                if (costumes.length === 0) {
+                    showMessage('Nenhuma fantasia disponível. Peça para o admin adicionar fantasias primeiro.', 'info');
+                }
+            }
         }
 
         async function loadSharedDataFromURL() {
