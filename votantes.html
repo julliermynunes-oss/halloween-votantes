@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votação de Fantasias de Halloween 🎃</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --card-bg: #1e1e1e;
+            --accent-orange: #ff6b35;
+            --accent-purple: #9d4edd;
+            --accent-green: #06d6a0;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #666666;
+            --border-color: #333333;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.4);
+            --gradient: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .costumes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .costume-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .costume-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .costume-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .costume-image:hover {
+            transform: scale(1.05);
+        }
+
+        .costume-info {
+            padding: 1.5rem;
+        }
+
+        .costume-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .costume-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .vote-count {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-orange);
+        }
+
+        .btn-vote {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-vote::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-vote:hover::before {
+            left: 100%;
+        }
+
+        .btn-vote:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-vote:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-vote:disabled::before {
+            display: none;
+        }
+
+        .voter-status {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--accent-orange);
+            text-align: center;
+        }
+
+        .voter-status h3 {
+            color: var(--accent-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .voter-status p {
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-sync {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .data-sync h3 {
+            color: var(--accent-orange);
+            margin-bottom: 1rem;
+        }
+
+        .data-sync p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .data-sync textarea {
+            width: 100%;
+            height: 100px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+
+        .data-sync button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.25rem;
+        }
+
+        .data-sync button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .image-modal-content {
+            background: var(--card-bg);
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-purple);
+        }
+
+        .modal-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-info {
+            padding: 1.5rem;
+        }
+
+        .modal-votes {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-orange);
+            margin-bottom: 1rem;
+        }
+
+        .modal-instructions {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .results-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #2d1b69);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .results-container {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .results-title {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 0px #ff6b35;
+        }
+
+        .results-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .podium-place {
+            text-align: center;
+            position: relative;
+        }
+
+        .podium-stand {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .podium-stand.first {
+            height: 200px;
+            width: 150px;
+        }
+
+        .podium-stand.second {
+            height: 150px;
+            width: 150px;
+        }
+
+        .podium-stand.third {
+            height: 100px;
+            width: 150px;
+        }
+
+        .podium-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #ff6b35;
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .podium-name {
+            color: #ff6b35;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 70px;
+            margin-bottom: 10px;
+        }
+
+        .podium-votes {
+            color: #ffd700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .podium-description {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-style: italic;
+            max-width: 150px;
+            margin: 0 auto;
+        }
+
+        .results-actions {
+            margin-top: 3rem;
+        }
+
+        .btn-results {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .btn-results:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b35;
+            animation: confettiFall 3s linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .revealing {
+            animation: spotlightReveal 2s ease-in-out;
+        }
+
+        @keyframes spotlightReveal {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 50px 20px rgba(255, 215, 0, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 100px 40px rgba(255, 215, 0, 0.3);
+            }
+        }
+
+        .message {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .message.success {
+            background: rgba(6, 214, 160, 0.2);
+            color: #06d6a0;
+            border: 2px solid #06d6a0;
+        }
+
+        .message.error {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 2px solid #ff4757;
+        }
+
+        .message.info {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .costumes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .podium-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .podium-stand {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎃 Votação Halloween</h1>
+            <p class="subtitle">Escolha suas 3 fantasias favoritas!</p>
+        </div>
+
+        <!-- Status do Votante -->
+        <div class="voter-status" id="voter-status" style="display: none;">
+            <h3>👤 Votante Identificado</h3>
+            <p id="voter-name-display"></p>
+            <p id="voter-votes-info"></p>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <button class="btn-results" id="identify-voter-btn">🔍 Identificar Votante</button>
+            <button class="btn-results" id="show-results-btn">🏆 Ver Resultados</button>
+        </div>
+
+        <!-- Instruções -->
+        <div class="data-sync">
+            <h3>🎃 Como Votar</h3>
+            <p><strong>1.</strong> Clique em "Identificar Votante" e digite seu nome</p>
+            <p><strong>2.</strong> Escolha até 3 fantasias favoritas</p>
+            <p><strong>3.</strong> Clique em "Ver Resultados" para ver o pódio</p>
+            <div style="margin-top: 1rem;">
+                <button id="refresh-data-btn">🔄 Atualizar Fantasias</button>
+            </div>
+        </div>
+
+        <!-- Grid de Fantasias -->
+        <div id="costumes-container" class="costumes-grid">
+            <!-- Fantasias serão carregadas aqui -->
+        </div>
+    </div>
+
+    <!-- Modal para visualização de imagem -->
+    <div id="image-modal" class="image-modal">
+        <div class="image-modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Nome da Fantasia</h3>
+                <button class="modal-close" id="modal-close">Fechar</button>
+            </div>
+            <img id="modal-image" class="modal-image" src="" alt="">
+            <div class="modal-info">
+                <div id="modal-description" style="margin-bottom: 15px; font-size: 1rem; line-height: 1.5; color: rgba(255, 255, 255, 0.9);"></div>
+                <div class="modal-votes">
+                    Votos: <span id="modal-votes">0</span>
+                </div>
+                <div class="modal-instructions">
+                    Clique na imagem para ampliar • Clique fora para fechar
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nome do votante -->
+    <div id="voter-modal" class="image-modal" style="z-index: 1500;">
+        <div class="image-modal-content" style="max-width: 500px; height: auto;">
+            <div class="modal-header">
+                <h3 class="modal-title">Identificação do Votante</h3>
+            </div>
+            <div style="padding: 2rem; text-align: center;">
+                <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem;">
+                    Para votar, precisamos saber seu nome. Você pode votar em até 3 fantasias diferentes, mas não pode votar na sua própria fantasia.
+                </p>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="voter-name" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">
+                        Seu nome:
+                    </label>
+                    <input type="text" id="voter-name" placeholder="Digite seu nome completo" 
+                           style="width: 100%; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--secondary-bg); color: var(--text-primary); font-size: 1.1rem; text-align: center;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn-results" id="confirm-voter-btn" style="min-width: 120px;">Confirmar</button>
+                    <button class="btn-results" id="cancel-voter-btn" style="min-width: 120px;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Resultados -->
+    <div id="results-screen" class="results-screen">
+        <div class="celebration" id="celebration"></div>
+        <div class="results-container">
+            <div class="results-header">
+                <h1 class="results-title">🏆 RESULTADOS FINAIS 🏆</h1>
+                <p class="results-subtitle">Os vencedores da votação de fantasias de Halloween!</p>
+            </div>
+            
+            <div class="podium-container" id="podium-container">
+                <!-- Os pódios serão inseridos aqui via JavaScript -->
+            </div>
+            
+            <div class="results-actions">
+                <button class="btn-results" id="back-to-voting-btn">🔙 Voltar para Votação</button>
+                <button class="btn-results" id="share-results-btn">📤 Compartilhar Resultados</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const costumesContainer = document.getElementById('costumes-container');
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalVotes = document.getElementById('modal-votes');
+        const modalClose = document.getElementById('modal-close');
+        const resultsScreen = document.getElementById('results-screen');
+        const showResultsBtn = document.getElementById('show-results-btn');
+        const backToVotingBtn = document.getElementById('back-to-voting-btn');
+        const shareResultsBtn = document.getElementById('share-results-btn');
+        const podiumContainer = document.getElementById('podium-container');
+        const celebration = document.getElementById('celebration');
+        const voterModal = document.getElementById('voter-modal');
+        const voterNameInput = document.getElementById('voter-name');
+        const confirmVoterBtn = document.getElementById('confirm-voter-btn');
+        const cancelVoterBtn = document.getElementById('cancel-voter-btn');
+        const identifyVoterBtn = document.getElementById('identify-voter-btn');
+        const voterStatus = document.getElementById('voter-status');
+        const voterNameDisplay = document.getElementById('voter-name-display');
+        const voterVotesInfo = document.getElementById('voter-votes-info');
+        const sharedDataTextarea = document.getElementById('shared-data');
+        const importDataBtn = document.getElementById('import-data-btn');
+        const loadSharedDataBtn = document.getElementById('load-shared-data-btn');
+
+        // Estado da aplicação
+        let costumes = [];
+        let currentVoter = null;
+        let voterVotes = {};
+        const SHARED_DATA_URL = 'https://raw.githubusercontent.com/julliermynunes-oss/halloween/main/shared-data.json';
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            renderCostumes();
+            initAudioContext();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Modal de imagem
+            modalClose.addEventListener('click', hideImageModal);
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) hideImageModal();
+            });
+
+            // Tela de resultados
+            showResultsBtn.addEventListener('click', showResultsScreen);
+            backToVotingBtn.addEventListener('click', hideResultsScreen);
+            shareResultsBtn.addEventListener('click', shareResults);
+
+            // Modal de votante
+            confirmVoterBtn.addEventListener('click', confirmVoter);
+            cancelVoterBtn.addEventListener('click', hideVoterModal);
+            identifyVoterBtn.addEventListener('click', showVoterModal);
+
+            // Fechar modal com Enter
+            voterNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    confirmVoter();
+                }
+            });
+
+            // Fechar modal clicando fora
+            voterModal.addEventListener('click', (e) => {
+                if (e.target === voterModal) {
+                    hideVoterModal();
+                }
+            });
+
+            // Atualizar fantasias
+            document.getElementById('refresh-data-btn').addEventListener('click', () => {
+                loadData();
+                renderCostumes();
+                showMessage('Fantasias atualizadas!', 'success');
+            });
+        }
+
+        function loadData() {
+            const storedData = localStorage.getItem('halloweenVotingData');
+            if (storedData) {
+                try {
+                    const data = JSON.parse(storedData);
+                    costumes = data.costumes || [];
+                    voterVotes = data.voterVotes || {};
+                    currentVoter = data.currentVoter || null;
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                    costumes = [];
+                    voterVotes = {};
+                    currentVoter = null;
+                }
+            }
+            updateVoterStatus();
+        }
+
+        async function loadSharedDataFromURL() {
+            try {
+                const response = await fetch(SHARED_DATA_URL + '?t=' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.costumes && Array.isArray(data.costumes)) {
+                        costumes = data.costumes;
+                        // Manter votos locais, mas atualizar fantasias
+                        saveData();
+                        showMessage('Fantasias atualizadas automaticamente!', 'success');
+                    }
+                }
+            } catch (error) {
+                console.log('Não foi possível carregar dados compartilhados:', error);
+                // Não mostrar erro, pois pode ser normal se não houver dados ainda
+            }
+        }
+
+        function saveData() {
+            const data = {
+                costumes: costumes,
+                voterVotes: voterVotes,
+                currentVoter: currentVoter
+            };
+            localStorage.setItem('halloweenVotingData', JSON.stringify(data));
+        }
+
+        function renderCostumes() {
+            costumesContainer.innerHTML = '';
+            
+            if (costumes.length === 0) {
+                costumesContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); font-size: 1.2rem; padding: 40px;">
+                        Nenhuma fantasia disponível. Importe os dados compartilhados pelo admin para ver as fantasias!
+                    </div>
+                `;
+                return;
+            }
+
+            costumes.forEach(costume => {
+                try {
+                    const costumeCard = document.createElement('div');
+                    costumeCard.className = 'costume-card';
+                    
+                    const safeName = costume.name.replace(/[<>]/g, '');
+                    const hasVoted = currentVoter && voterVotes[currentVoter] && voterVotes[currentVoter].includes(costume.id);
+                    const isOwnCostume = currentVoter && costume.name.toLowerCase().includes(currentVoter.toLowerCase());
+                    const votesUsed = currentVoter ? (voterVotes[currentVoter] || []).length : 0;
+                    const votesRemaining = 3 - votesUsed;
+                    
+                    let buttonState = '';
+                    let buttonText = `👍 Votar (${costume.votes})`;
+                    
+                    if (!currentVoter) {
+                        buttonState = 'disabled';
+                        buttonText = '🔍 Identifique-se para votar';
+                    } else if (hasVoted) {
+                        buttonState = 'disabled';
+                        buttonText = '✅ Já votou';
+                    } else if (isOwnCostume) {
+                        buttonState = 'disabled';
+                        buttonText = '🚫 Sua própria fantasia';
+                    } else if (votesRemaining <= 0) {
+                        buttonState = 'disabled';
+                        buttonText = '❌ Limite de votos atingido';
+                    }
+
+                    costumeCard.innerHTML = `
+                        <img src="${costume.imageUrl}" alt="${safeName}" class="costume-image" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkVycm8gYW8gY2FycmVnYXIgaW1hZ2VtPC90ZXh0Pgo8L3N2Zz4K'" title="Clique para ampliar">
+                        <div class="costume-info">
+                            <h3 class="costume-name">${safeName}${isOwnCostume ? ' <span style="color: var(--accent-orange); font-size: 0.8em;">(Sua fantasia)</span>' : ''}</h3>
+                            ${costume.description ? `<p class="costume-description">${costume.description}</p>` : ''}
+                            <p class="vote-count">Votos: <span id="votes-${costume.id}">${costume.votes}</span></p>
+                            ${currentVoter ? `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Votos restantes: ${votesRemaining}</p>` : ''}
+                            <button class="btn-vote" data-id="${costume.id}" ${buttonState}>${buttonText}</button>
+                        </div>
+                    `;
+                    
+                    // Aplicar estilo especial para a própria fantasia
+                    if (isOwnCostume) {
+                        costumeCard.style.borderColor = '#ffd700';
+                        costumeCard.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.5)';
+                    }
+                    
+                    costumesContainer.appendChild(costumeCard);
+                    
+                    // Adicionar evento de clique na imagem
+                    const costumeImage = costumeCard.querySelector('.costume-image');
+                    costumeImage.addEventListener('click', () => {
+                        openImageModal(costume);
+                    });
+                } catch (error) {
+                    console.error('Erro ao renderizar fantasia:', costume, error);
+                }
+            });
+            
+            // Adicionar eventos para botões de voto
+            document.querySelectorAll('.btn-vote').forEach(button => {
+                button.addEventListener('click', handleVote);
+            });
+        }
+
+        function handleVote(event) {
+            const costumeId = event.target.dataset.id;
+            
+            if (!currentVoter) {
+                showVoterModal();
+                return;
+            }
+
+            const costume = costumes.find(c => c.id === costumeId);
+            if (!costume) return;
+
+            const hasVoted = voterVotes[currentVoter] && voterVotes[currentVoter].includes(costumeId);
+            const isOwnCostume = costume.name.toLowerCase().includes(currentVoter.toLowerCase());
+            const votesUsed = (voterVotes[currentVoter] || []).length;
+
+            if (hasVoted) {
+                showMessage('Você já votou nesta fantasia!', 'error');
+                return;
+            }
+
+            if (isOwnCostume) {
+                showMessage('Você não pode votar na sua própria fantasia!', 'error');
+                return;
+            }
+
+            if (votesUsed >= 3) {
+                showMessage('Você já usou todos os seus 3 votos!', 'error');
+                return;
+            }
+
+            // Adicionar voto
+            if (!voterVotes[currentVoter]) {
+                voterVotes[currentVoter] = [];
+            }
+            voterVotes[currentVoter].push(costumeId);
+            costume.votes++;
+
+            saveData();
+            renderCostumes();
+            showMessage(`Voto registrado para ${costume.name}!`, 'success');
+        }
+
+        function openImageModal(costume) {
+            modalImage.src = costume.imageUrl;
+            modalTitle.textContent = costume.name;
+            modalDescription.textContent = costume.description || '';
+            modalVotes.textContent = costume.votes;
+            imageModal.style.display = 'block';
+        }
+
+        function hideImageModal() {
+            imageModal.style.display = 'none';
+        }
+
+        function showVoterModal() {
+            voterModal.style.display = 'block';
+            voterNameInput.focus();
+        }
+
+        function hideVoterModal() {
+            voterModal.style.display = 'none';
+            voterNameInput.value = '';
+        }
+
+        function confirmVoter() {
+            const voterName = voterNameInput.value.trim();
+            
+            if (!voterName) {
+                showMessage('Por favor, digite seu nome!', 'error');
+                return;
+            }
+
+            currentVoter = voterName;
+            if (!voterVotes[currentVoter]) {
+                voterVotes[currentVoter] = [];
+            }
+
+            saveData();
+            hideVoterModal();
+            renderCostumes();
+            updateVoterStatus();
+            showMessage(`Bem-vindo, ${voterName}! Você pode votar em até 3 fantasias.`, 'success');
+        }
+
+        function updateVoterStatus() {
+            if (currentVoter) {
+                const votesUsed = (voterVotes[currentVoter] || []).length;
+                const votesRemaining = 3 - votesUsed;
+                
+                voterNameDisplay.textContent = `👤 ${currentVoter}`;
+                voterVotesInfo.textContent = `Votos usados: ${votesUsed}/3 | Restantes: ${votesRemaining}`;
+                voterStatus.style.display = 'block';
+                identifyVoterBtn.textContent = '🔄 Trocar Votante';
+            } else {
+                voterStatus.style.display = 'none';
+                identifyVoterBtn.textContent = '🔍 Identificar Votante';
+            }
+        }
+
+        function showResultsScreen() {
+            if (costumes.length === 0) {
+                showMessage('Nenhuma fantasia para mostrar resultados!', 'error');
+                return;
+            }
+
+            resultsScreen.style.display = 'block';
+            createPodium();
+        }
+
+        function createPodium() {
+            // Ordenar fantasias por votos
+            const sortedCostumes = [...costumes].sort((a, b) => b.votes - a.votes);
+            
+            podiumContainer.innerHTML = '';
+
+            // Criar pódio com animação dramática
+            setTimeout(() => {
+                // 3º lugar
+                if (sortedCostumes[2]) {
+                    createPodiumPlace(sortedCostumes[2], 'third', '🥉');
+                    playDrumSound();
+                }
+            }, 1000);
+
+            setTimeout(() => {
+                // 2º lugar
+                if (sortedCostumes[1]) {
+                    createPodiumPlace(sortedCostumes[1], 'second', '🥈');
+                    playDrumSound();
+                }
+            }, 3000);
+
+            setTimeout(() => {
+                // 1º lugar
+                if (sortedCostumes[0]) {
+                    createPodiumPlace(sortedCostumes[0], 'first', '🥇');
+                    playVictorySound();
+                    createConfetti();
+                }
+            }, 5000);
+        }
+
+        function createPodiumPlace(costume, position, medal) {
+            const podiumPlace = document.createElement('div');
+            podiumPlace.className = 'podium-place';
+            
+            podiumPlace.innerHTML = `
+                <div class="podium-stand ${position} revealing">
+                    <img src="${costume.imageUrl}" alt="${costume.name}" class="podium-image">
+                </div>
+                <div class="podium-name">${medal} ${costume.name}</div>
+                <div class="podium-votes">${costume.votes} voto${costume.votes !== 1 ? 's' : ''}</div>
+                ${costume.description ? `<div class="podium-description">${costume.description}</div>` : ''}
+            `;
+            
+            podiumContainer.appendChild(podiumPlace);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b35', '#ffd700', '#ff4757', '#2ed573', '#3742fa'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    celebration.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+
+        function hideResultsScreen() {
+            resultsScreen.style.display = 'none';
+            celebration.innerHTML = '';
+        }
+
+        function shareResults() {
+            const results = costumes
+                .sort((a, b) => b.votes - a.votes)
+                .map((costume, index) => `${index + 1}º lugar: ${costume.name} - ${costume.votes} voto${costume.votes !== 1 ? 's' : ''}`)
+                .join('\n');
+            
+            const shareText = `🏆 RESULTADOS DA VOTAÇÃO HALLOWEEN 🎃\n\n${results}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Resultados Halloween',
+                    text: shareText
+                });
+            } else {
+                copyToClipboard(shareText);
+                showMessage('Resultados copiados para a área de transferência!', 'success');
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function importData() {
+            const dataString = sharedDataTextarea.value.trim();
+            
+            if (!dataString) {
+                showMessage('Por favor, cole os dados na área de texto!', 'error');
+                return;
+            }
+
+            try {
+                const data = JSON.parse(dataString);
+                
+                if (data.costumes && Array.isArray(data.costumes)) {
+                    costumes = data.costumes;
+                    voterVotes = data.voterVotes || {};
+                    currentVoter = data.currentVoter || null;
+                    
+                    saveData();
+                    renderCostumes();
+                    updateVoterStatus();
+                    showMessage('Dados importados com sucesso!', 'success');
+                } else {
+                    showMessage('Formato de dados inválido!', 'error');
+                }
+            } catch (e) {
+                showMessage('Erro ao importar dados. Verifique se o formato está correto!', 'error');
+            }
+        }
+
+        function loadSharedData() {
+            const dataString = sharedDataTextarea.value.trim();
+            
+            if (!dataString) {
+                showMessage('Por favor, cole os dados na área de texto!', 'error');
+                return;
+            }
+
+            importData();
+        }
+
+        // Sistema de áudio
+        let audioContext;
+
+        function initAudioContext() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Web Audio API não suportada');
+            }
+        }
+
+        function playDrumSound() {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playVictorySound() {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2);
+            oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.4);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.6);
+        }
+
+        function showMessage(message, type) {
+            // Remove mensagens existentes
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('.container').insertBefore(messageDiv, document.querySelector('.header').nextSibling);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
